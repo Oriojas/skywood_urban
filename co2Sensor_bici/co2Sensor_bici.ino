@@ -6,11 +6,11 @@ const char* ssid = "Milo";
 const char* password = "97274340";
 String wallet = "5D2fBKHgezt6pKKuXFo8Xse3sT9hZK5PtkJEyacozZJnVXZ3";
 String token = "0ce956fc-131b-42d6-a4b1-8e8319e45f84";
-String serverName = "http://ec2-54-234-110-184.compute-1.amazonaws.com:8086/data_co/";
+String serverName = "http://ec2-54-234-110-184.compute-1.amazonaws.com:8086/data_co_bici/";
 String source = "Sensor_bici";
 const int sensorPin = A0;
 int sensorValue = 0;
-int ledPin = 5;
+int ledPin = 2;
 
 WiFiClient wifiClient;
 
@@ -42,23 +42,23 @@ void setup() {
 void loop() {
   
 
-  sensorValue = analogRead(sensorPin) * 10;
+  sensorValue = analogRead(sensorPin) * 14.538;
   Serial.println(sensorValue);
   
    
   if (WiFi.status() == WL_CONNECTED) { 
 
   HTTPClient http;  
-  String serverPath = serverName + "?co2=" + sensorValue + "&origin=" + source + "&wallet_send=" + wallet + "&token=" + token; 
+  String serverPath = serverName + "?co2=" + sensorValue + "&origin=" + source + "&token=" + token; 
 
   http.begin(wifiClient, serverPath);                         
   int httpCode = http.GET();                                 
   Serial.println("request OK");
 
-  digitalWrite(ledPin, HIGH); // turn the ledPin on
-  delay(500); // wait for a second
-  digitalWrite(ledPin, LOW); // turn the ledPin off
-  delay(500); // wait for a second
+  digitalWrite(ledPin, LOW); 
+  delay(500); 
+  digitalWrite(ledPin, HIGH); 
+  delay(500); 
 
   if (httpCode > 0) { 
 
@@ -71,12 +71,12 @@ void loop() {
   
   }
 
-  digitalWrite(ledPin, HIGH); // turn the ledPin on
-  delay(500); // wait for a second
-  digitalWrite(ledPin, LOW); // turn the ledPin off
-  delay(500); // wait for a second
+  digitalWrite(ledPin, LOW); 
+  delay(500); 
+  digitalWrite(ledPin, HIGH); 
+  delay(500); 
   
-  delay(15000);
+  delay(8000);
     
 
 }
