@@ -2,8 +2,8 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 
-const char* ssid = "Milo";
-const char* password = "97274340";
+const char* ssid = "SantiV";
+const char* password = "skywood123*";
 String wallet = "5D2fBKHgezt6pKKuXFo8Xse3sT9hZK5PtkJEyacozZJnVXZ3";
 String token = "0ce956fc-131b-42d6-a4b1-8e8319e45f84";
 String serverName = "http://ec2-54-234-110-184.compute-1.amazonaws.com:8086/data_co_bici/";
