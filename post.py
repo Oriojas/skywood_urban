@@ -17,6 +17,7 @@ class postIpfs:
         dat = f'"data=@{FOLDER_DATA}{self.file_name}.json"'
 
         self.post = f'curl -X POST {url} -H {aut} -H {con} -F {dat}'
+        #git
 
     def send_data(self):
         resp = subprocess.run(self.post,
