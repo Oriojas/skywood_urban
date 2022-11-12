@@ -41,7 +41,7 @@ async def send_data(co2: int, origin: str, token: str):
 
         df_co = pd.read_csv('temp_data/temp_data.csv', index_col=0)
 
-        date_c = datetime.today().strftime('%Y-%m-%d_%H-%M')
+        date_c = datetime.today().strftime('%Y-%m-%d %H:%M')
 
         df_co = df_co.append({'CO2': co2,
                               'DATE_C': date_c,
@@ -62,6 +62,8 @@ async def send_data(co2: int, origin: str, token: str):
 
         if cont == int(ROWS):
             file_name = df_co['DATE_C'].iloc[-1]
+            file_name = file_name.replace(" ", "_")
+            file_name = file_name.replace(":", "_")
             print(file_name)
             temp_file = f"temp_data/{file_name}.json"
             df_co.to_json(temp_file)
