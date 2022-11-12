@@ -5,7 +5,7 @@ import time
 import pandas as pd
 from datetime import datetime
 from post import postIpfs
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
@@ -92,7 +92,7 @@ async def last_data(token: str):
     if token == TOKEN:
         df_last = pd.read_csv("temp_data/temp_data.csv", index_col=0)
         json_last = df_last.to_json()
-        json_format = jsonable_encoder(json_last)
+        json_format = jsonable_encoder(df_last.to_dict(orient="records"))
     else:
         print('Bad token')
         json_format = None
