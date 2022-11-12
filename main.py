@@ -90,10 +90,9 @@ async def send_data(co2: int, origin: str, token: str):
 
 @app.get('/last_data/')
 async def last_data(token: str):
-
     if token == TOKEN:
         df_last = pd.read_csv("temp_data/temp_data.csv", index_col=0)
-        json_last = df_last.to_json()
+        # json_last = df_last.to_json()
         json_format = jsonable_encoder(df_last.to_dict(orient="records"))
     else:
         print('Bad token')
@@ -102,5 +101,20 @@ async def last_data(token: str):
     return JSONResponse(content=json_format)
 
 
+@app.get('/query_ipfs/')
+async def query_ipfs(init_date: str, final_date: str):
+    with pyodbc.connect(
+            'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE} WHERE time_stamp BETWEEN '{init_date}' AND '{final_date}'"
+
+        df = pd.read_sql(sql_query, conn)
+
+        json_format = jsonable_encoder(df.to_dict(orient="records"))
+
+    return JSONResponse(content=json_format)
+
+
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8088)
+
+
