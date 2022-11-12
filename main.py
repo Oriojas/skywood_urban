@@ -72,7 +72,7 @@ async def send_data(co2: int, origin: str, token: str):
                     'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
                 with conn.cursor() as cursor:
                     count = cursor.execute(
-                        f"INSERT INTO {INSTANCE} (cid, ret_url, date) VALUES ('{cid}', '{ret_url}', '{file_name}');").rowcount
+                        f"INSERT INTO {INSTANCE} (cid, ret_url, date, time_stamp) VALUES ('{cid}', '{ret_url}', '{file_name}', DEFAULT);").rowcount
                     conn.commit()
                     print(f'Rows inserted: {str(count)}')
 
