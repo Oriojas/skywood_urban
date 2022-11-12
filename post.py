@@ -3,6 +3,7 @@ import json
 import subprocess
 
 KEY = os.environ["KEY"]
+FOLDER_DATA = os.environ["FOLDER_DATA"]
 
 
 class postIpfs:
@@ -13,7 +14,7 @@ class postIpfs:
         url = "https://api.estuary.tech/content/add"
         aut = f'"Authorization: Bearer {KEY}"'
         con = '"Content-Type: multipart/form-data"'
-        dat = f'"data=@/home/oscar/GitHub/skywood_urban/temp_data/{self.file_name}.json"'
+        dat = f'"data=@{FOLDER_DATA}{self.file_name}.json"'
 
         self.post = f'curl -X POST {url} -H {aut} -H {con} -F {dat}'
 

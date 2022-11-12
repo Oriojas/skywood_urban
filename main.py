@@ -84,5 +84,19 @@ async def send_data(co2: int, origin: str, token: str):
     else:
         print('Bad token')
 
+
+@app.get('/last_data/')
+async def last_data(token: str):
+
+    if token == TOKEN:
+        df_last = pd.read_csv("temp_data/temp_data.csv", index_col=0)
+        json_last = df_last.to_json()
+    else:
+        print('Bad token')
+        json_last = None
+
+    return json_last
+
+
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8088)
