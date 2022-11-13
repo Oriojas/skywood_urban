@@ -2,11 +2,11 @@
 #include <ESP8266HTTPClient.h>
 #include <WiFiClient.h>
 
-const char* ssid = "VirusT";
-const char* password = "Bimbo123*";
+const char* ssid = "Milo";
+const char* password = "97274340";
 String token = "0ce956fc-131b-42d6-a4b1-8e8319e45f84";
 String serverName = "http://ec2-34-207-93-96.compute-1.amazonaws.com:8088/send_data/";
-String source = "Sensor1";
+String source = "Sensor2";
 const int sensorPin = A0;
 int sensorValue = 0;
 int ledPin = 2;

@@ -3,6 +3,7 @@ import pyodbc
 import uvicorn
 import time
 import datetime
+import warnings
 import pandas as pd
 from datetime import datetime
 from post import postIpfs
@@ -10,6 +11,8 @@ from get import getData
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
+
 
 app = FastAPI()
 
@@ -43,7 +46,7 @@ async def send_data(co2: int, origin: str, token: str):
 
         df_co = pd.read_csv('temp_data/temp_data.csv', index_col=0)
 
-        date_c = datetime.today().strftime('%Y-%m-%d %H:%M')
+        date_c = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 
         df_co = df_co.append({'CO2': co2,
                               'DATE_C': date_c,
@@ -119,7 +122,19 @@ async def query_ipfs(init_date: str, final_date: str):
     return JSONResponse(content=json_format)
 
 
+@app.get('/claim/')
+async def query_ipfs():
+    with pyodbc.connect(
+            'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE}"
+
+        df_l = pd.read_sql(sql_query, conn)
+        df_l = df_l[["time_stamp", "ret_url"]]
+        df_output = getData(df_index=df_l).fit()
+        json_format = jsonable_encoder(df_output.to_dict(orient="records"))
+
+    return JSONResponse(content=json_format)
+
+
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8088)
-
-
