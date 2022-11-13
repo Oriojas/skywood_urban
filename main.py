@@ -80,7 +80,7 @@ async def send_data(co2: int, origin: str, token: str):
                     'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
                 with conn.cursor() as cursor:
                     count = cursor.execute(
-                        f"INSERT INTO {INSTANCE} (cid, ret_url, date, time_stamp) VALUES ('{cid}', '{ret_url}', '{file_name}', DEFAULT);").rowcount
+                        f"INSERT INTO {INSTANCE} (cid, ret_url, date, time_stamp, claim) VALUES ('{cid}', '{ret_url}', '{file_name}', DEFAULT, DEFAULT);").rowcount
                     conn.commit()
                     print(f'Rows inserted: {str(count)}')
 
@@ -112,7 +112,7 @@ async def last_data(token: str):
 async def query_ipfs(init_date: str, final_date: str):
     with pyodbc.connect(
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
-        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE} WHERE time_stamp BETWEEN '{init_date}' AND '{final_date}'"
+        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp, claim FROM {INSTANCE} WHERE time_stamp BETWEEN '{init_date}' AND '{final_date}'"
 
         df_l = pd.read_sql(sql_query, conn)
         df_l = df_l[["time_stamp", "ret_url"]]
@@ -122,18 +122,19 @@ async def query_ipfs(init_date: str, final_date: str):
     return JSONResponse(content=json_format)
 
 
-@app.get('/claim/')
+@app.get('/query_drop/')
 async def query_ipfs():
     with pyodbc.connect(
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
         sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE}"
 
         df_l = pd.read_sql(sql_query, conn)
-        df_l = df_l[["time_stamp", "ret_url"]]
-        df_output = getData(df_index=df_l).fit()
-        json_format = jsonable_encoder(df_output.to_dict(orient="records"))
+        df_l = df_l[df_l['cid'] != 'Bad Request']
+        df_l['claim'] = 0
 
-    return JSONResponse(content=json_format)
+
+
+    return
 
 
 if __name__ == '__main__':
