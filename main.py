@@ -126,7 +126,7 @@ async def query_ipfs(init_date: str, final_date: str):
 async def query_ipfs():
     with pyodbc.connect(
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
-        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE}"
+        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp, claim, time_stamp, time_stamp FROM {INSTANCE}"
 
         df_l = pd.read_sql(sql_query, conn)
         df_l = df_l[df_l['cid'] != 'Bad Request']
