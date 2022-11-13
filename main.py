@@ -2,10 +2,12 @@ import os
 import pyodbc
 import uvicorn
 import time
+import datetime
 import pandas as pd
 from datetime import datetime
 from post import postIpfs
-from fastapi import FastAPI, Response
+from get import getData
+from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
@@ -92,7 +94,9 @@ async def send_data(co2: int, origin: str, token: str):
 async def last_data(token: str):
     if token == TOKEN:
         df_last = pd.read_csv("temp_data/temp_data.csv", index_col=0)
-        # json_last = df_last.to_json()
+        df_last['DATE_C'] = pd.to_datetime(df_last['DATE_C'])
+        df_last['DATE_C'] = df_last['DATE_C'].apply(lambda x: x.timestamp())
+
         json_format = jsonable_encoder(df_last.to_dict(orient="records"))
     else:
         print('Bad token')
@@ -107,9 +111,10 @@ async def query_ipfs(init_date: str, final_date: str):
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
         sql_query = f"SELECT id, cid, ret_url, [date], time_stamp FROM {INSTANCE} WHERE time_stamp BETWEEN '{init_date}' AND '{final_date}'"
 
-        df = pd.read_sql(sql_query, conn)
-
-        json_format = jsonable_encoder(df.to_dict(orient="records"))
+        df_l = pd.read_sql(sql_query, conn)
+        df_l = df_l[["time_stamp", "ret_url"]]
+        df_output = getData(df_index=df_l).fit()
+        json_format = jsonable_encoder(df_output.to_dict(orient="records"))
 
     return JSONResponse(content=json_format)
 

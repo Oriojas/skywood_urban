@@ -1,12 +1,22 @@
-import os
-import requests
+import pandas as pd
 
-KEY = os.environ["KEY"]
+class getData:
 
-url = "https://api.estuary.tech/content/list"
+    def __init__(self, df_index):
 
-header = {"Authorization": f"Bearer {KEY}"}
+        self.df_output = pd.DataFrame()
+        self.df_index = df_index[df_index["ret_url"] != "Bad Request"]
+        self.list_url = list(self.df_index["ret_url"])
 
-query = requests.get(url, headers=header)
+    def fit(self):
+        df_output = self.df_output
+        for url_i in self.list_url:
+            try:
+                df_temp = pd.read_json(url_i)
+                print(url_i)
+                df_output = pd.concat([df_output, df_temp])
+            except:
+                print("Bad request")
 
-print(query.content)
+        return df_output
+
