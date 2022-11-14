@@ -1,7 +1,6 @@
 import os
 import pyodbc
 import uvicorn
-import json
 import time
 import datetime
 import warnings
@@ -97,6 +96,11 @@ async def send_data(co2: int, origin: str, token: str):
 
 @app.get('/last_data/')
 async def last_data(token: str):
+    """
+    this endpoint is used to render in front
+    :param token: token endpoint
+    :return: 60 las data
+    """
     if token == TOKEN:
         df_last = pd.read_csv("temp_data/temp_data.csv", index_col=0)
         df_last['DATE_C'] = pd.to_datetime(df_last['DATE_C'])
@@ -112,6 +116,12 @@ async def last_data(token: str):
 
 @app.get('/query_ipfs/')
 async def query_ipfs(init_date: str, final_date: str):
+    """
+    this endpoint query in ipfs directly
+    :param init_date: example 2022-11-13 22:19:44.453
+    :param final_date: example 2022-11-13 22:19:44.453
+    :return: json object
+    """
     with pyodbc.connect(
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
         sql_query = f"SELECT id, cid, ret_url, [date], time_stamp, claim FROM {INSTANCE} WHERE time_stamp BETWEEN '{init_date}' AND '{final_date}'"
@@ -126,6 +136,11 @@ async def query_ipfs(init_date: str, final_date: str):
 
 @app.get('/query_drop/')
 async def query_drop(token: str):
+    """
+    this endpoint query disposable drop
+    :param token: token endpoint
+    :return: int, claim
+    """
     if token == TOKEN:
 
         with pyodbc.connect(
@@ -142,6 +157,12 @@ async def query_drop(token: str):
 
 @app.get('/claim_drop/')
 async def claim_drop(token: str, user: str):
+    """
+    this endpoint claim disposable drop
+    :param token: token endpoint
+    :param user: str
+    :return: json response
+    """
     if token == TOKEN:
 
         with pyodbc.connect(
@@ -162,7 +183,7 @@ async def claim_drop(token: str, user: str):
                     print(f'Claim: {str(count)}')
 
             file_name = f"claim_{user}_{datetime.today().strftime('%Y-%m-%d_%H-%M-%S')}"
-            df_l.to_json(f'temp_data/{file_name}')
+            df_l.to_json(f'temp_data/{file_name}.json')
             time.sleep(30)
 
             cid, ret_url = postIpfs(file_name=str(file_name)).send_data()
