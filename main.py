@@ -210,5 +210,16 @@ async def claim_drop(token: str, user: str):
     return JSONResponse(content=json_format)
 
 
+@app.get('/reset_db/')
+async def reset_db():
+    """
+    WARNING!!! this function is only test drop in production
+    :return: None
+    """
+    with pyodbc.connect(
+            'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+        sql_query = f"UPDATE {INSTANCE} SET claim = 0 WHERE claim = 1;"
+
+
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8088)
