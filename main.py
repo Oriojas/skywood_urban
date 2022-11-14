@@ -1,6 +1,7 @@
 import os
 import pyodbc
 import uvicorn
+import json
 import time
 import datetime
 import warnings
@@ -24,6 +25,7 @@ PASSWORD = os.environ["PASSWORD"]
 DRIVER = os.environ["DRIVER"]
 TOKEN = os.environ["TOKEN"]
 ROWS = os.environ["ROWS"]
+FOLDER_DATA = os.environ["FOLDER_DATA"]
 
 with open('temp_data/init.txt', 'w') as f:
     f.write(str(0))
@@ -123,8 +125,7 @@ async def query_ipfs(init_date: str, final_date: str):
 
 
 @app.get('/query_drop/')
-async def query_ipfs(token: str):
-
+async def query_drop(token: str):
     if token == TOKEN:
 
         with pyodbc.connect(
@@ -137,6 +138,54 @@ async def query_ipfs(token: str):
         claim = None
 
     return claim
+
+
+@app.get('/claim_drop/')
+async def claim_drop(token: str, user: str):
+    if token == TOKEN:
+
+        with pyodbc.connect(
+                'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+            sql_query = f"SELECT * FROM {INSTANCE} WHERE claim = 0"
+
+        df_l = pd.read_sql(sql_query, conn)
+
+        claim = len(df_l)
+
+        if claim > 0:
+            with pyodbc.connect(
+                    'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+                with conn.cursor() as cursor:
+                    count = cursor.execute(
+                        f"UPDATE {INSTANCE} SET claim = 1 WHERE claim = 0;").rowcount
+                    conn.commit()
+                    print(f'Claim: {str(count)}')
+
+            file_name = f"claim_{user}_{datetime.today().strftime('%Y-%m-%d_%H-%M-%S')}"
+            df_l.to_json(f'temp_data/{file_name}')
+            time.sleep(30)
+
+            cid, ret_url = postIpfs(file_name=str(file_name)).send_data()
+
+            os.remove(f'{FOLDER_DATA}{file_name}.json')
+
+            response = {"cid": cid,
+                        "ret_url": ret_url,
+                        "claim": claim}
+
+        else:
+            response = {"cid": "Bad Request",
+                        "ret_url": "Bad Request",
+                        "claim": "No claim available"}
+
+    else:
+        response = {"cid": "Bad Request",
+                    "ret_url": "Bad Request",
+                    "claim": "No claim available"}
+
+    json_format = jsonable_encoder(response)
+
+    return JSONResponse(content=json_format)
 
 
 if __name__ == '__main__':

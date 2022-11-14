@@ -2,6 +2,7 @@ import warnings
 import pandas as pd
 warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
+
 class getData:
 
     def __init__(self, df_index):
@@ -21,4 +22,3 @@ class getData:
                 print("Bad request")
 
         return df_output
-
