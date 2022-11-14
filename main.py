@@ -11,8 +11,8 @@ from get import getData
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
+warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
 app = FastAPI()
 
@@ -123,18 +123,20 @@ async def query_ipfs(init_date: str, final_date: str):
 
 
 @app.get('/query_drop/')
-async def query_ipfs():
-    with pyodbc.connect(
-            'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
-        sql_query = f"SELECT id, cid, ret_url, [date], time_stamp, claim, time_stamp, time_stamp FROM {INSTANCE}"
+async def query_ipfs(token: str):
 
-        df_l = pd.read_sql(sql_query, conn)
-        df_l = df_l[df_l['cid'] != 'Bad Request']
-        df_l['claim'] = 0
+    if token == TOKEN:
 
+        with pyodbc.connect(
+                'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
+            sql_query = f"SELECT cid FROM {INSTANCE} WHERE claim = 0"
 
+            df_l = pd.read_sql(sql_query, conn)
+            claim = len(df_l)
+    else:
+        claim = None
 
-    return
+    return claim
 
 
 if __name__ == '__main__':
