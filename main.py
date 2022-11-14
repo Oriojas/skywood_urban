@@ -218,7 +218,10 @@ async def reset_db():
     """
     with pyodbc.connect(
             'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD) as conn:
-        sql_query = f"UPDATE {INSTANCE} SET claim = 0 WHERE claim = 1;"
+        with conn.cursor() as cursor:
+            count = cursor.execute(
+                f"UPDATE {INSTANCE} SET claim = 0 WHERE claim = 1;")
+            conn.commit()
 
 
 if __name__ == '__main__':
