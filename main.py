@@ -16,14 +16,15 @@ warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
 app = FastAPI()
 
+ROWS = os.environ["ROWS"]
+TOKEN = os.environ["TOKEN"]
 SERVER = os.environ["SERVER"]
+DRIVER = os.environ["DRIVER"]
+DELAY = int(os.environ["DELAY"])
 INSTANCE = os.environ["INSTANCE"]
 DATABASE = os.environ["DATABASE"]
 USERNAME = os.environ["USERNAME"]
 PASSWORD = os.environ["PASSWORD"]
-DRIVER = os.environ["DRIVER"]
-TOKEN = os.environ["TOKEN"]
-ROWS = os.environ["ROWS"]
 FOLDER_DATA = os.environ["FOLDER_DATA"]
 
 with open('temp_data/init.txt', 'w') as f:
@@ -73,7 +74,7 @@ async def send_data(co2: int, origin: str, token: str):
             print(file_name)
             temp_file = f"temp_data/{file_name}.json"
             df_co.to_json(temp_file)
-            time.sleep(30)
+            time.sleep(DELAY)
             cid, ret_url = postIpfs(file_name=str(file_name)).send_data()
             print(f'saveIpfs : {file_name}, {ret_url}')
 
@@ -184,7 +185,7 @@ async def claim_drop(token: str, user: str):
 
             file_name = f"claim_{user}_{datetime.today().strftime('%Y-%m-%d_%H-%M-%S')}"
             df_l.to_json(f'temp_data/{file_name}.json')
-            time.sleep(30)
+            time.sleep(DELAY)
 
             cid, ret_url = postIpfs(file_name=str(file_name)).send_data()
 
