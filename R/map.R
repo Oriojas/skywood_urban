@@ -8,7 +8,7 @@ data$LAT =  as.double(data$LAT)
 # data$LON =  sub(".", ",", data$LON, fixed = TRUE)
 data$LON=  as.double(data$LON)
 
-register_google(key = "AIzaSyD1X3sw4Lw0WDLXZDzSdYYkxDanvlVgvv0") #AIzaSyArt2RgDClSbg4g3ngF7wCD6DA7nnCs-l0
+register_google(key = xxxxxxxxx) 
 
 data_map = get_map(location = c(-74.0648854, 4.7565838), # la función get_map me permite tomar el mapa
                   zoom = 16, # nivel de zoom
