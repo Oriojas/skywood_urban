@@ -2,14 +2,14 @@
 
 This repository cotains all back end for, sava and query data saved in Estuary IPFS
 
-<img src="/home/oscar/GitHub/skywood_urban/img/filecoin_data.png"/>
+<img src="https://github.com/Oriojas/skywood_urban/blob/master/img/filecoin_data.png"/>
 
 ## Sensor
 
 The sensor used ESP8266 and MQ135 sensor:
 
-<img src="/home/oscar/GitHub/skywood_urban/img/circuito.png"/>
+<img src="https://github.com/Oriojas/skywood_urban/blob/master/img/circuito.png"/>
 
 ## Sensor cost
 
-<img src="/home/oscar/GitHub/skywood_urban/img/bom.png"/>
+<img src="https://github.com/Oriojas/skywood_urban/blob/master/img/bom.png"/>
